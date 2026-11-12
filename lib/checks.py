@@ -220,10 +220,11 @@ def run_checks(ctl):
             "monitor at 0,0 with scale 1 is tested (mouse-away closing and click areas may be off)")
     else:
         add("output", "Settings", "ok", f"Monitor: {out_name or 'first screen'} (setting: {want})")
+    # Informational only: the window's App menu section already offers this, so no Setup-list item for it.
     if not ctl.desktop_status("ui")["exists"]:
-        add("menu-entry", "Settings", "suggest", "No app-menu shortcut for the APT Layer UI yet", {"type": "menu-entry"})
+        add("menu-entry", "Settings", "info", "No app-menu shortcut for the APT Layer UI", {"type": "menu-entry"})
     elif not ctl.desktop_status("ui")["pointsHere"]:
-        add("menu-entry", "Settings", "suggest", "The app-menu shortcut opens another copy of APT Layer", {"type": "menu-entry"})
+        add("menu-entry", "Settings", "info", "The app-menu shortcut opens another copy of APT Layer", {"type": "menu-entry"})
     else:
         add("menu-entry", "Settings", "ok", "App-menu shortcut for the APT Layer UI")
     return out

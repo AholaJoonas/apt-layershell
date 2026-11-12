@@ -27,16 +27,7 @@ and tells you what's missing and how to install it.
    [release](https://github.com/AholaJoonas/apt-layershell/releases) (it has the preload library prebuilt).
 2. **Install [Quickshell](https://quickshell.org/docs/guide/install-setup/)** if you don't have it.
 3. **Run `./apt-layer-ui`** in the folder.
-
-The **APT Layer UI** window opens. If something is missing, it tells you what and how to fix it — usually
-with a single button.
-
-Then press **Start**: APT starts and its overlay appears over the game. You can also start the game from
-there with **Launch Path of Exile**.
-
-**Always start APT from APT Layer** (the UI's **Start**, or the shortcut you can create from the UI), not from APT's own
-or an AppImage manager's menu entry — otherwise the price checks don't reach the overlay (the window then offers
-**Restart APT**).
+4. If everything is ok - press **Start APT + overlay** and start PoE.
 
 Nothing is installed into your system; keep the folder anywhere (`make install` is optional). Prefer the
 terminal? `bin/apt-layer doctor` checks everything and `bin/apt-layer-launch` starts APT + the overlay; more in
