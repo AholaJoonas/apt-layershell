@@ -29,6 +29,8 @@ and tells you what's missing and how to install it.
 3. **Run `./apt-layer-ui`** in the folder.
 4. If everything is ok - press **Start APT + overlay** and start PoE.
 
+![The APT Layer UI: status of APT, the game and the overlay, Start and Launch Path of Exile, settings and app-menu shortcuts](docs/images/apt-layer-ui.png)
+
 Nothing is installed into your system; keep the folder anywhere (`make install` is optional). Prefer the
 terminal? `bin/apt-layer doctor` checks everything and `bin/apt-layer-launch` starts APT + the overlay; more in
 [docs/technical.md](docs/technical.md).

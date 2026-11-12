@@ -70,6 +70,10 @@ ShellRoot {
         stdout: StdioCollector { onStreamFinished: { root.outputTitle = "Build"; root.outputText = text || "(no output)"; } }
         onExited: { root.refreshChecks(); root.refresh(); }
     }
+    // Paths in the home folder are shown as "~/…" (shorter, and screenshots don't show the user name).
+    readonly property string home: Quickshell.env("HOME") || ""
+    function tilde(text) { return home !== "" ? String(text ?? "").split(home + "/").join("~/") : String(text ?? ""); }
+
     function openUrl(url) { Quickshell.execDetached(["xdg-open", url]); }
 
     function showOutput(title, cmd) {
@@ -274,7 +278,7 @@ ShellRoot {
                             ColumnLayout {
                                 Layout.fillWidth: true
                                 spacing: 4
-                                Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: modelData.text }
+                                Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: root.tilde(modelData.text) }
                                 RowLayout {
                                     visible: fix.type === "install" && (fix.command ?? "") !== ""
                                     Layout.fillWidth: true
@@ -487,9 +491,9 @@ ShellRoot {
                         TextField {
                             Layout.fillWidth: true
                             readOnly: true
-                            text: root.st?.config?.APPIMAGE ?? ""
+                            text: root.tilde(root.st?.config?.APPIMAGE ?? "")
                             placeholderText: root.st?.apt?.executable
-                                ? "Automatic: " + root.st.apt.executable + "  (" + root.st.apt.executableSource + ")"
+                                ? root.tilde("Automatic: " + root.st.apt.executable + "  (" + root.st.apt.executableSource + ")")
                                 : "Automatic: not found — choose it"
                         }
                         Button { text: "Choose…"; onClicked: appImageDialog.open() }
@@ -535,7 +539,7 @@ ShellRoot {
                                     // The dot and the buttons show whether the shortcut exists; only a shortcut
                                     // that opens a different copy gets its own text.
                                     text: e?.exists && !e.pointsHere
-                                        ? "The existing shortcut opens another copy: " + (e.target ?? "?")
+                                        ? "The existing shortcut opens another copy: " + root.tilde(e.target ?? "?")
                                         : modelData.what
                                 }
                             }
@@ -588,7 +592,7 @@ ShellRoot {
                     elide: Text.ElideMiddle
                     color: "#80858f"
                     font.pixelSize: 11
-                    text: root.st ? "Config: " + root.st.config.file + (root.st.config.exists ? "" : " (not created yet — defaults)") : ""
+                    text: root.st ? "Config: " + root.tilde(root.st.config.file) + (root.st.config.exists ? "" : " (not created yet — defaults)") : ""
                 }
             }
         }
