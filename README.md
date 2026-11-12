@@ -2,14 +2,19 @@
 
 **Awakened PoE Trade's overlay on layer-shell — for niri & others.**
 
+Started as a fix for my personal setup but I've tried to make it more accommodating for other similar setups.
+
+State: early. Built and used on niri and currently only with Path of Exile 1.
+
+**APT Layer doesn't modify any PoE or Awakened PoE Trade files so you won't break your installations when running it**
+
+## Problem
+
 [Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade) (APT) on Linux normally draws its price checks as an X11
 overlay over Path of Exile. On niri that overlay can't be shown.
 
 **TL;DR:** niri runs X11 apps through xwayland-satellite, which can't show APT's overlay windows. This project draws APT's UI in a Quickshell layer-shell overlay instead.
 
-Status: early. Built and used on niri with APT 3.29.108 and Path of Exile 1.
-
-**APT Layer doesn't modify any PoE or Awakened PoE Trade files so you won't break your installations when running it**
 
 ## Requirements
 
