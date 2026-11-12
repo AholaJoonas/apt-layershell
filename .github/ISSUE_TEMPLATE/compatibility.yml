@@ -1,0 +1,66 @@
+name: Compatibility report
+description: Tell us how APT Layer works on your compositor or setup (works fine reports are welcome too!)
+title: "Compatibility: <compositor> on <distribution>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        APT Layer is built and tested on **niri**. Reports from other layer-shell compositors (Hyprland, Sway,
+        KDE, river, Wayfire, COSMIC, …) help others know what to expect — including "everything works".
+
+  - type: input
+    id: compositor
+    attributes:
+      label: Compositor and version
+      placeholder: "Hyprland 0.52"
+    validations:
+      required: true
+
+  - type: input
+    id: distro
+    attributes:
+      label: Distribution
+      placeholder: "Arch Linux"
+
+  - type: input
+    id: version
+    attributes:
+      label: APT Layer version
+      description: "`bin/apt-layer --version`"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: result
+    attributes:
+      label: Overall
+      options:
+        - Everything works
+        - Works with problems
+        - Doesn't work
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: works
+    attributes:
+      label: What works?
+      options:
+        - label: The APT Layer UI opens and its setup list is happy
+        - label: The overlay shows over the game, and the game gets clicks and keys while it's idle
+        - label: Price check (Ctrl+D) appears next to the inventory / stash and closes when the mouse moves away
+        - label: Locked price check (Ctrl+Alt+D) and APT's overlay key (Shift+Space)
+        - label: Esc / clicking the game returns to the game
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: What didn't work, workarounds you needed, monitor layout / scaling, Path of Exile display mode.
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor output
+      description: "`bin/apt-layer doctor` (remove anything you don't want to share)"
+      render: text

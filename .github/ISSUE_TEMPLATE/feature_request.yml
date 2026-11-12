@@ -1,0 +1,17 @@
+name: Feature request
+description: An idea to make APT Layer better
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like, and why?
+      description: The situation you're in and what would help. If it's about Awakened PoE Trade's own features, please ask in APT's repository instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: ideas
+    attributes:
+      label: Ideas or alternatives
+      description: How it could work, or what you do today instead.

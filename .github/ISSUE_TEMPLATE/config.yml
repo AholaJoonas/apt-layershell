@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Problems with Awakened PoE Trade itself
+    url: https://github.com/SnosMe/awakened-poe-trade/issues
+    about: Price data, item parsing, APT settings or crashes that also happen without APT Layer belong in APT's repository.
+  - name: Setup help
+    url: https://github.com/AholaJoonas/apt-layershell#getting-started
+    about: Run ./apt-layer-ui first — its setup list and `bin/apt-layer doctor` explain most problems.

@@ -1,0 +1,91 @@
+name: Bug report
+description: Something doesn't work as it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! The **doctor output** and the **log** below answer most questions, so please
+        include them. They contain paths with your username — remove or replace anything you don't want to share.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+      placeholder: |
+        1. Started APT from the APT Layer UI
+        2. Pressed Ctrl+D on an item in my stash
+        3. Expected the price check next to the stash — it appeared on the other monitor
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Quick checks
+      description: These cause most problems.
+      options:
+        - label: I started Awakened PoE Trade **from APT Layer** (the APT Layer UI's Start, or its "APT Layer" menu entry), not from APT's own or an AppImage manager's entry
+        - label: Path of Exile runs on **X11** (no `PROTON_ENABLE_WAYLAND=1` or similar in its launch options)
+        - label: Nothing else shows APT's UI (no browser tab with APT open)
+
+  - type: input
+    id: version
+    attributes:
+      label: APT Layer version
+      description: "Output of `bin/apt-layer --version` (also shown next to the title in the APT Layer UI)"
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor output
+      description: "Output of `bin/apt-layer doctor` (run it while the problem happens, if you can)"
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Overlay log
+      description: |
+        `bin/apt-layerctl log -t 100` while APT Layer runs (or right after the problem).
+        If APT itself misbehaves, also: `journalctl --user -u 'apt-layer-apt-*' -n 100`
+      render: text
+
+  - type: input
+    id: compositor
+    attributes:
+      label: Compositor and version
+      placeholder: "niri 26.04"
+    validations:
+      required: true
+
+  - type: input
+    id: distro
+    attributes:
+      label: Distribution
+      placeholder: "Arch Linux, CachyOS, Fedora 43, NixOS 25.11, …"
+
+  - type: input
+    id: apt
+    attributes:
+      label: Awakened PoE Trade version and how it's installed
+      placeholder: "3.29.108, AppImage via Gear Lever"
+
+  - type: input
+    id: game
+    attributes:
+      label: Path of Exile setup
+      description: Display mode, Proton version, monitor layout (the doctor shows the monitor too)
+      placeholder: "Windowed Fullscreen, Proton Experimental, 2560x1440 monitor at 0,0, scale 1"
+
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else?
+      description: Screenshots, other overlays or tools you use (MangoHud, gamescope, …), what you already tried.
