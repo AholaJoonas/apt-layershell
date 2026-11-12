@@ -6,14 +6,18 @@ Started as a fix for my personal setup but I've tried to make it more accommodat
 
 State: early. Built and used on niri and currently only with Path of Exile 1.
 
-**APT Layer doesn't modify any PoE or Awakened PoE Trade files so you won't break your installations when running it**
+**APT Layer doesn't modify any PoE or Awakened PoE Trade files, so you won't break your installations by
+running it.**
+
+![The APT Layer UI: status of APT, the game and the overlay, Start and Launch Path of Exile, settings and app-menu shortcuts](docs/images/apt-layer-ui.png)
 
 ## Problem
 
-[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade) (APT) on Linux normally draws its price checks as an X11
-overlay over Path of Exile. On niri that overlay can't be shown.
+[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade) (APT) on Linux normally draws its price
+checks as an X11 overlay over Path of Exile. On niri that overlay can't be shown.
 
-**TL;DR:** niri runs X11 apps through xwayland-satellite, which can't show APT's overlay windows. This project draws APT's UI in a Quickshell layer-shell overlay instead.
+**TL;DR:** niri runs X11 apps through xwayland-satellite, which can't show APT's overlay windows. This project
+draws APT's UI in a Quickshell layer-shell overlay instead.
 
 
 ## Requirements
@@ -23,7 +27,8 @@ overlay over Path of Exile. On niri that overlay can't be shown.
   `PROTON_ENABLE_WAYLAND=1` to the game's launch options (some Proton versions ignore it, others don't) — the
   APT Layer UI warns if the game runs as a Wayland window.
 - **Quickshell** with **Qt WebEngine**, and **python3**.
-- **Awakened PoE Trade** (the AppImage version (if there even is anything else)).
+- **Awakened PoE Trade** — the AppImage (from GitHub or an AppImage manager) or a package; it's found
+  automatically.
 
 Not sure what you have? Just install Quickshell and run `./apt-layer-ui`: the APT Layer UI checks the rest
 and tells you what's missing and how to install it.
@@ -36,8 +41,6 @@ and tells you what's missing and how to install it.
 3. **Run `./apt-layer-ui`** in the folder.
 4. If everything is ok - press **Start APT + overlay** and start PoE.
 
-![The APT Layer UI: status of APT, the game and the overlay, Start and Launch Path of Exile, settings and app-menu shortcuts](docs/images/apt-layer-ui.png)
-
 Nothing is installed into your system; keep the folder anywhere (`make install` is optional). Prefer the
 terminal? `bin/apt-layer doctor` checks everything and `bin/apt-layer-launch` starts APT + the overlay; more in
 [docs/technical.md](docs/technical.md).
@@ -49,7 +52,7 @@ terminal? `bin/apt-layer doctor` checks everything and `bin/apt-layer-launch` st
 - Only tested with the game on a monitor at position 0,0 and scale 1; other layouts may misplace clicks.
 - Depends on APT's internals (tested with 3.29.108); an APT update may need an APT Layer update.
 - APT's built-in browser opens in your normal browser instead.
-- Bit of a memory hog - Uses about 450 MB of memory on top of APT. APT's UI is a web page that APT normally shows in its own
+- Bit of a memory hog: about 450 MB on top of APT. APT's UI is a web page that APT normally shows in its own
   window; that window can't be an overlay on niri, so APT Layer shows the page itself, with a Chromium-based
   engine (Qt WebEngine). [Why not lighter?](docs/technical.md#memory)
 
