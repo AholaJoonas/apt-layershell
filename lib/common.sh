@@ -55,6 +55,18 @@ clean_env() {
     export PATH XDG_SESSION_TYPE=wayland QT_QPA_PLATFORM=wayland
 }
 
+# LD_PRELOAD can't hold a path with spaces or colons (ld.so splits the list on them), e.g. a copy unpacked in
+# "~/Games/APT Layer". Then preload it through a symlink in the runtime directory instead.
+preload_path() {
+    case "$SHIM_SO" in
+        *[[:space:]:]*)
+            _d="${XDG_RUNTIME_DIR:-/tmp}/apt-layer"
+            mkdir -p "$_d" && ln -sfn "$SHIM_SO" "$_d/libqs-webengine-shim.so" || die "can't link the preload library into $_d"
+            printf '%s' "$_d/libqs-webengine-shim.so" ;;
+        *) printf '%s' "$SHIM_SO" ;;
+    esac
+}
+
 # The preload shim is built by `make`; from a checkout, build it on first use.
 ensure_shim() {
     [ -f "$SHIM_SO" ] && return 0

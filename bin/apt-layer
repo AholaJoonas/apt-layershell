@@ -113,7 +113,7 @@ APT_LAYER_OUTPUT=$(resolve_output)
 APT_LAYER_KEYBOARD=$(conf KEYBOARD exclusive)
 export APT_LAYER_OUTPUT APT_LAYER_KEYBOARD
 if [ "$(conf OUTPUT auto)" = auto ]; then export APT_LAYER_OUTPUT_AUTO=1; else unset APT_LAYER_OUTPUT_AUTO; fi
-export LD_PRELOAD="$SHIM_SO${LD_PRELOAD:+:$LD_PRELOAD}"
+export LD_PRELOAD="$(preload_path)${LD_PRELOAD:+:$LD_PRELOAD}"
 
 # Only one apt-layer runs at a time, across all copies (Quickshell matches instances by ShellId).
 if [ "$mode" = test ]; then

@@ -117,12 +117,13 @@ def desktop_status(kind):
     if st["exists"]:
         try:
             with open(path) as f:
-                m = re.search(r'^Exec="?([^"\s]+)', f.read(), re.M)
+                # Exec="/path with spaces/bin/apt-layer" ui -> the program (quoted or not)
+                m = re.search(r'^Exec=(?:"([^"]+)"|(\S+))', f.read(), re.M)
         except OSError:
             m = None
         if m:
-            st["target"] = m.group(1)
-            st["pointsHere"] = os.path.realpath(m.group(1)) == os.path.realpath(
+            st["target"] = m.group(1) or m.group(2)
+            st["pointsHere"] = os.path.realpath(st["target"]) == os.path.realpath(
                 os.path.join(TREE, "bin", "apt-layer" if kind == "ui" else "apt-layer-launch"))
     return st
 
