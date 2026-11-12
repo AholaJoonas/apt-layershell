@@ -9,6 +9,8 @@ overlay over Path of Exile. On niri that overlay can't be shown.
 
 Status: early. Built and used on niri with APT 3.29.108 and Path of Exile 1.
 
+**APT Layer doesn't modify any PoE or Awakened PoE Trade files so you won't break your installations when running it**
+
 ## Requirements
 
 - A Wayland compositor with layer-shell: **niri** (tested); Hyprland, Sway, KDE and others may work. Not GNOME.
