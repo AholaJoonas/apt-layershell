@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>apt-layer:idle</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden;
+               font: 15px/1.4 system-ui, sans-serif; color: #eee; }
+  #banner { position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            padding: 8px 16px; border-radius: 8px; background: rgba(20, 20, 30, .6);
+            border: 1px solid rgba(255, 255, 255, .25); white-space: nowrap; }
+  #banner b { color: #8fd; }
+  body.active #banner b { color: #fc6; }
+  /* stand-in for APT's price-check panel: ~430 px wide, anchored right, 16 px margin */
+  #panel { position: absolute; top: 120px; right: 16px; width: 430px; display: none;
+           padding: 16px; box-sizing: border-box; border-radius: 6px;
+           background: rgba(25, 25, 35, .92); border: 1px solid #fc6; }
+  body.active #panel { display: block; }
+  button { font: inherit; padding: 6px 12px; margin-top: 8px; cursor: pointer; }
+  #log { margin-top: 10px; font: 12px monospace; color: #aaa; white-space: pre; }
+</style>
+</head>
+<body>
+  <div id="banner">APT Layer test page · <b id="state">idle (click-through)</b> · <span id="clock"></span></div>
+  <div id="panel" data-overlay-hit>
+    <div><b>Fake price check</b> — the overlay is interactive now.</div>
+    <div>Clicks received by the page: <b id="clicks">0</b></div>
+    <button id="done">Done → back to idle</button>
+    <div>…or press <b>Esc</b>.</div>
+    <div id="log"></div>
+  </div>
+<script>
+  const $ = id => document.getElementById(id);
+  let clicks = 0;
+  const log = msg => { console.log(msg); $('log').textContent = (msg + '\n' + $('log').textContent).slice(0, 400); };
+
+  // Called by the host (shell.qml) whenever its state changes.
+  window.setOverlayActive = on => {
+    document.body.classList.toggle('active', on);
+    $('state').textContent = on ? 'active (takes input)' : 'idle (click-through)';
+    document.title = on ? 'apt-layer:active' : 'apt-layer:idle';
+  };
+  // Polled by the host while active: the rects that should take pointer input
+  // (everything else on the output stays click-through). Elements opt in with data-overlay-hit.
+  window.overlayRects = () => [...document.querySelectorAll('[data-overlay-hit]')]
+    .map(el => el.getBoundingClientRect())
+    .filter(r => r.width > 0 && r.height > 0)
+    .map(r => ({ x: r.x, y: r.y, w: r.width, h: r.height }));
+
+  const goIdle = why =>{ log('go idle: ' + why); window.setOverlayActive(false); };
+
+  // Any click the page receives is logged — in idle mode there should be none.
+  document.addEventListener('mousedown', e => { clicks++; $('clicks').textContent = clicks; log(`click ${clicks} at ${e.clientX},${e.clientY}`); });
+  document.addEventListener('keydown', e => { log('key ' + e.key); if (e.key === 'Escape') goIdle('Esc'); });
+  $('done').addEventListener('click', () => goIdle('button'));
+
+  setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString(); }, 250);
+</script>
+</body>
+</html>

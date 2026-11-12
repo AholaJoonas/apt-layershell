@@ -1,0 +1,34 @@
+#!/bin/sh
+# apt-layer-launch - start Awakened PoE Trade so that its UI opens in apt-layer.
+#
+# APT runs headless (--no-overlay: xwayland-satellite can't show its X11 overlay window) and opens its UI
+# with xdg-open http://localhost:<port>/index.html. Our xdg-open shim (lib/xdg-open-shim) is first on
+# APT's PATH and hands that URL to apt-layer; any other URL goes to the real xdg-open.
+# APT stays an X11 client (its hotkeys and item copy need PoE and APT on X11).
+# APT runs as a transient systemd user service (apt-layer-apt-*), see lib/common.sh spawn_detached.
+#
+# If APT is already running, a second APT would just exit (it's single-instance and doesn't tell the
+# running one anything), so then only the overlay is started - or left alone if it's already up.
+set -eu
+. "$(dirname "$(readlink -f "$0")")/../lib/common.sh"
+
+case $(apt_state) in
+    ok)
+        overlay_running && exit 0
+        exec "$TREE/bin/apt-layer" ;;
+    wrong)
+        # Started without --no-overlay (e.g. from an AppImage manager's own menu entry): its UI can't reach
+        # the overlay that way. Restart it properly.
+        notify-send "APT Layer" "Restarting Awakened PoE Trade for APT Layer…" 2>/dev/null || true
+        python3 "$TREE/lib/ctl.py" stop-apt || die "couldn't stop the running Awakened PoE Trade" ;;
+esac
+
+app=$(find_apt)
+[ -n "$app" ] || die "Awakened PoE Trade not found: set APPIMAGE= in $CONFIG_FILE"
+[ -x "$app" ] || die "$app is not executable"
+
+export XDG_SESSION_TYPE=x11
+export PATH="$TREE/lib/xdg-open-shim:$PATH"
+unset LD_PRELOAD
+# Not as our own child, like an app launcher would: see spawn_detached.
+spawn_detached apt-layer-apt "$app" --ozone-platform=x11 --no-overlay "$@"

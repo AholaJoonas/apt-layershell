@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=APT Layer UI
+GenericName=Path of Exile trade overlay
+Comment=Awakened PoE Trade's overlay on layer-shell - for niri & others: status, settings and start
+Exec="@BINDIR@/apt-layer" ui
+Icon=@SHAREDIR@/apt-layer-ui.svg
+Categories=Game;
+Keywords=poe;path of exile;awakened;trade;price;overlay;
+Terminal=false
+StartupNotify=false
+StartupWMClass=apt-layer

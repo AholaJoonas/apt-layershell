@@ -1,0 +1,4 @@
+#!/bin/sh
+# APT Layer - start here. Opens the APT Layer UI, which checks your system and walks you through the setup
+# (packages, building the preload library once, finding Awakened PoE Trade, an app-menu shortcut).
+exec "$(dirname "$(readlink -f "$0")")/bin/apt-layer" ui "$@"

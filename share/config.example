@@ -1,0 +1,15 @@
+# apt-layer config: ~/.config/apt-layer/config
+# KEY=value, one per line. Environment variables APT_LAYER_<KEY> override these.
+
+# Output (monitor) to draw the overlay on: a niri output name like DP-2, or "auto" =
+# the output Path of Exile's window is on (checked when the overlay starts and when PoE starts; before PoE runs,
+# the focused output).
+#OUTPUT=auto
+
+# Advanced - keyboard while the overlay is interactive: exclusive (default; Esc works at once) or ondemand
+# (keys only go to the overlay after you click it). Only for compositors or tools that clash with the default.
+#KEYBOARD=exclusive
+
+# Awakened PoE Trade executable for apt-layer-launch. Default: the newest
+# Awakened-PoE-Trade*.AppImage in ~/.local/bin, ~/Applications or ~/AppImages, else `awakened-poe-trade`.
+#APPIMAGE=/home/me/Applications/Awakened-PoE-Trade-3.29.108.AppImage

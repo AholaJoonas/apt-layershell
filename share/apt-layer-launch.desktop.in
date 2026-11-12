@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=APT Layer
+Comment=Start Awakened PoE Trade with APT Layer (its overlay on layer-shell, for niri & others)
+Exec="@BINDIR@/apt-layer-launch" %U
+Icon=@SHAREDIR@/apt-layer.svg
+Categories=Game;
+Keywords=poe;path of exile;awakened;trade;price;
+Terminal=false
+StartupNotify=false

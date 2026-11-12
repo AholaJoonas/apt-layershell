@@ -1,0 +1,10 @@
+#!/bin/sh
+# xdg-open shim, first on APT's PATH (see bin/apt-layer-launch): APT's own UI
+# (http://localhost:<port>/...) -> apt-layer; anything else -> the real xdg-open.
+here=$(dirname "$(readlink -f "$0")")
+case "${1:-}" in
+    http://localhost:[0-9]*|http://127.0.0.1:[0-9]*)
+        exec "$here/../../bin/apt-layer" "$1" ;;
+esac
+PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -vE '/xdg-open-shim/?$' | paste -sd: -)
+exec xdg-open "$@"

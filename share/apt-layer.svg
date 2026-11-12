@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- APT Layer: an orb (nod to Awakened PoE Trade's dark-purple / gold look; drawn from scratch, no game
+       art) behind two stacked panels - the overlay's layers, the front one a price-check card. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#231c31"/>
+      <stop offset="1" stop-color="#120e1a"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="0.38" cy="0.34" r="0.75">
+      <stop offset="0" stop-color="#b48ae6"/>
+      <stop offset="0.35" stop-color="#6e3fae"/>
+      <stop offset="0.8" stop-color="#2e1648"/>
+      <stop offset="1" stop-color="#1c0f2c"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0c96a"/>
+      <stop offset="1" stop-color="#b9842e"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="6" y="6" width="116" height="116" rx="26" fill="url(#bg)"/>
+  <rect x="6" y="6" width="116" height="116" rx="26" fill="none" stroke="#3b3150" stroke-width="2"/>
+
+  <!-- orb -->
+  <circle cx="48" cy="54" r="33" fill="url(#orb)"/>
+  <circle cx="48" cy="54" r="33" fill="none" stroke="url(#gold)" stroke-width="3.5"/>
+  <ellipse cx="37" cy="41" rx="10" ry="6.5" fill="#ffffff" opacity="0.28" transform="rotate(-30 37 41)"/>
+
+  <!-- back layer -->
+  <rect x="54" y="52" width="50" height="58" rx="8" fill="#2b2338" fill-opacity="0.88" stroke="#7e62ad" stroke-width="2.5"/>
+
+  <!-- front layer: price-check card -->
+  <rect x="66" y="40" width="50" height="60" rx="8" fill="#1a1622" fill-opacity="0.96" stroke="url(#gold)" stroke-width="3.5"/>
+  <rect x="74" y="50" width="30" height="6" rx="3" fill="url(#gold)"/>
+  <rect x="74" y="63" width="34" height="4.5" rx="2.25" fill="#9d93b0"/>
+  <rect x="74" y="73" width="24" height="4.5" rx="2.25" fill="#9d93b0"/>
+  <rect x="74" y="83" width="29" height="4.5" rx="2.25" fill="#9d93b0"/>
+</svg>

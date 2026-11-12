@@ -1,0 +1,144 @@
+#!/bin/sh
+# apt-layer (APT Layer) - Awakened PoE Trade's overlay on layer-shell — for niri & others.
+# Shows Awakened PoE Trade's UI as a transparent layer-shell overlay over the game.
+set -eu
+. "$(dirname "$(readlink -f "$0")")/../lib/common.sh"
+
+usage() {
+    cat <<EOF
+APT Layer - Awakened PoE Trade's overlay on layer-shell — for niri & others
+
+Usage: apt-layer [URL]              start on APT's UI, or point a running overlay at URL
+                                      (URL default: found from APT's listening port)
+       apt-layer --foreground [URL] same, in this terminal with logs (replaces a running overlay)
+       apt-layer --test             the built-in test page instead of APT (foreground)
+       apt-layer --restart          stop the overlay and start it again on APT's UI
+       apt-layer launch-game        start Path of Exile through Steam
+       apt-layer quit               quit Awakened PoE Trade and the overlay
+       apt-layer restart-apt        quit Awakened PoE Trade and start it again for APT Layer
+                                      (e.g. after it was started from an AppImage manager's entry)
+       apt-layer ui                 open the control window (status, monitor, keyboard, start/stop)
+       apt-layer status [--json]    APT, PoE and overlay status
+       apt-layer config KEY [VALUE] show / set a setting (OUTPUT, KEYBOARD, APPIMAGE; VALUE "" = default)
+       apt-layer --version          APT Layer's version (plus the git commit for checkouts)
+       apt-layer doctor             check dependencies and settings (what's missing and how to fix it)
+       apt-layer build              build the preload library (once after a git clone; release tarballs have it)
+       apt-layer menu-entry add|remove|print [ui|launch]
+                                      app-menu entry for this copy: ui = "APT Layer UI" (control window,
+                                      default), launch = "APT Layer" (starts APT + overlay)
+
+APT itself is started with apt-layer-launch, whose xdg-open shim runs "apt-layer URL".
+Config: $CONFIG_FILE (OUTPUT, KEYBOARD, APPIMAGE); env APT_LAYER_<KEY> overrides it.
+Control a running overlay with apt-layerctl.
+EOF
+}
+
+mode=start
+case "${1:-}" in
+    -h|--help) usage; exit 0 ;;
+    -V|--version|version) exec python3 "$TREE/lib/ctl.py" version ;;
+    doctor) shift; exec python3 "$TREE/lib/ctl.py" checks "$@" ;;
+    build)
+        # The preload library (lib/libqs-webengine-shim.so); needed once after a git clone.
+        command -v make >/dev/null || die "make is missing (see apt-layer doctor)"
+        make -B -C "$TREE" shim && echo "built $SHIM_SO" ;;
+    menu-entry|--desktop-entry)
+        shift
+        _a=${1:-print}; case $_a in add|remove|print) shift ;; *) _a=print ;; esac
+        exec python3 "$TREE/lib/ctl.py" desktop-entry "$_a" "${1:-ui}" ;;
+    status) shift; exec python3 "$TREE/lib/ctl.py" status "$@" ;;
+    config)
+        shift
+        [ $# -ge 1 ] || { usage >&2; exit 2; }
+        if [ $# -eq 1 ]; then exec python3 "$TREE/lib/ctl.py" config-get "$1"; fi
+        python3 "$TREE/lib/ctl.py" config-set "$1" "$2"
+        # Apply to a running overlay right away where possible.
+        if overlay_running; then
+            case $1 in
+                OUTPUT)
+                    if [ "$(conf OUTPUT auto)" = auto ]; then
+                        # Follows PoE's monitor from now on (moves as soon as PoE's window is seen).
+                        qs -p "$QS_CFG" ipc call overlay setOutputAuto true >/dev/null
+                    else
+                        qs -p "$QS_CFG" ipc call overlay setOutputAuto false >/dev/null
+                        qs -p "$QS_CFG" ipc call overlay setOutput "$(resolve_output)" >/dev/null
+                    fi ;;
+                KEYBOARD) qs -p "$QS_CFG" ipc call overlay setKeyboard "$(conf KEYBOARD exclusive)" >/dev/null ;;
+            esac
+        fi
+        exit 0 ;;
+    ui)
+        if ! command -v qs >/dev/null 2>&1; then
+            die "APT Layer needs Quickshell, which isn't installed. Install it (see https://quickshell.org/docs/guide/install-setup/ ; on Arch-based systems e.g. the quickshell package), then start APT Layer again."
+        fi
+        clean_env
+        unset LD_PRELOAD
+        export QT_QUICK_CONTROLS_STYLE=${QT_QUICK_CONTROLS_STYLE:-Fusion}
+        # File picker ("Choose…") through the desktop portal = the system's own file chooser. Without a
+        # portal Qt falls back to its built-in dialog (drawn inside the window).
+        export QT_QPA_PLATFORMTHEME=xdgdesktopportal
+        if qs list -p "$TREE/quickshell-ui" 2>/dev/null | grep -q 'Process ID'; then
+            # Already running: bring its window into view (niri); a leftover instance without a window
+            # (e.g. from an older version that didn't quit on close) is replaced.
+            python3 "$TREE/lib/niri-query.py" focus apt-layer 2>/dev/null && exit 0
+            qs kill -p "$TREE/quickshell-ui" >/dev/null 2>&1 || true
+            sleep 0.5
+        fi
+        spawn_detached apt-layer-ui qs -p "$TREE/quickshell-ui"
+        exit 0 ;;
+    quit)
+        # Quit Awakened PoE Trade and the overlay (the overlay would follow APT within ~10 s anyway).
+        qs kill -p "$QS_CFG" >/dev/null 2>&1 || true
+        python3 "$TREE/lib/ctl.py" stop-apt || die "couldn't stop Awakened PoE Trade"
+        exit 0 ;;
+    launch-game)
+        # Path of Exile through Steam (its launch options apply), started like APT: not as our own child.
+        clean_env
+        unset LD_PRELOAD
+        spawn_detached apt-layer-game xdg-open "steam://rungameid/238960"
+        exit 0 ;;
+    restart-apt)
+        # Quit APT (however it was started) and start it the APT Layer way.
+        python3 "$TREE/lib/ctl.py" stop-apt || die "couldn't stop the running Awakened PoE Trade"
+        exec "$TREE/bin/apt-layer-launch" ;;
+    --restart) mode=restart; shift ;;
+    -f|--foreground) mode=fg; shift ;;
+    --test) mode=test; shift ;;
+    -*) usage >&2; exit 2 ;;
+esac
+
+clean_env
+ensure_shim
+APT_LAYER_OUTPUT=$(resolve_output)
+APT_LAYER_KEYBOARD=$(conf KEYBOARD exclusive)
+export APT_LAYER_OUTPUT APT_LAYER_KEYBOARD
+if [ "$(conf OUTPUT auto)" = auto ]; then export APT_LAYER_OUTPUT_AUTO=1; else unset APT_LAYER_OUTPUT_AUTO; fi
+export LD_PRELOAD="$SHIM_SO${LD_PRELOAD:+:$LD_PRELOAD}"
+
+# Only one apt-layer runs at a time, across all copies (Quickshell matches instances by ShellId).
+if [ "$mode" = test ]; then
+    overlay_running && echo "apt-layer: replacing the running overlay with the test page" >&2
+    qs kill -p "$QS_CFG" >/dev/null 2>&1 || true
+    unset APT_LAYER_URL APT_LAYER_ADAPTER
+    exec qs -p "$QS_CFG"
+fi
+
+url=${1:-}
+[ -n "$url" ] || url=$(apt_url) || true
+[ -n "$url" ] || die "Awakened PoE Trade isn't running (no listening port found)"
+export APT_LAYER_URL="$url" APT_LAYER_ADAPTER=1
+
+if [ "$mode" = fg ]; then
+    overlay_running && echo "apt-layer: replacing the running overlay" >&2
+    qs kill -p "$QS_CFG" >/dev/null 2>&1 || true
+    echo "apt-layer: $url on ${APT_LAYER_OUTPUT:-first screen}" >&2
+    exec qs -p "$QS_CFG"
+fi
+
+if [ "$mode" = restart ]; then
+    qs kill -p "$QS_CFG" >/dev/null 2>&1 || true
+    sleep 1
+elif overlay_running; then
+    LD_PRELOAD= exec qs -p "$QS_CFG" ipc call overlay setUrl "$url"
+fi
+spawn_detached apt-layer qs -p "$QS_CFG"

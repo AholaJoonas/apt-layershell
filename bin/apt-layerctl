@@ -1,0 +1,17 @@
+#!/bin/sh
+# apt-layerctl - control a running apt-layer.
+set -eu
+. "$(dirname "$(readlink -f "$0")")/../lib/common.sh"
+
+case "${1:-}" in
+    ""|-h|--help)
+        cat <<EOF
+Usage: apt-layerctl status | toggle | setMode idle|shown|focused | setActive true|false
+                      | reloadPage | setUrl URL      (IPC calls)
+       apt-layerctl kill | log [qs log options]
+EOF
+        [ -n "${1:-}" ] || exit 2; exit 0 ;;
+    kill) exec qs kill -p "$QS_CFG" ;;
+    log) shift; exec qs log -p "$QS_CFG" "$@" ;;
+    *) exec qs -p "$QS_CFG" ipc call overlay "$@" ;;
+esac
